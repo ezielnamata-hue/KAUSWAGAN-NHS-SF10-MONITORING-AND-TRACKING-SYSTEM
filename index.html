@@ -71,7 +71,25 @@ const KEY='KNHS_DocumentTrack_V4_DB';
 let db, currentUser;
 const publicMode=true;
 let adminMode=false;
-const defaultDB={school:{name:'Kauswagan National High School',id:'315411',division:'Cagayan de Oro City',region:'Region X'},users:[{id:1,username:'admin',name:'System Administrator',role:'Administrator',password:'admin123',active:true}],audit:[]};
+const defaultDB={school:{name:'Kauswagan National High School',id:'315411',division:'Cagayan de Oro City',region:'Region X'},users:[{id:1,username:'admin',name:'System Administrator',role:'Administrator',password:'admin123',active:true}],sf10:[],audit:[]};
+
+// Safe SF10 defaults for GitHub Pages / fresh browsers.
+// The previous version referenced SF10_IMPORT and normalizeSF10 without defining them,
+// which stopped renderDashboard() with a JavaScript ReferenceError.
+const SF10_IMPORT=[];
+function normalizeSF10(x={}){
+  return {
+    sf10id:String(x.sf10id??x.id??''),
+    name:String(x.name??x.learnerName??''),
+    destination:String(x.destination??x.school??''),
+    dateTransmitted:String(x.dateTransmitted??''),
+    trackingNo:String(x.trackingNo??''),
+    secondaryDate:String(x.secondaryDate??''),
+    status:String(x.status??'Pending'),
+    remarks:String(x.remarks??''),
+    lastUpdated:String(x.lastUpdated??'')
+  };
+}
 function load(){
   try{db=JSON.parse(localStorage.getItem(KEY))||structuredClone(defaultDB)}
   catch(e){db=structuredClone(defaultDB)}
@@ -328,7 +346,7 @@ function exportCSV(){if(publicMode)return;initSF10();let rows=[['SF10 No','Learn
 function closeModal(id){document.getElementById(id).style.display='none'}
 function initSF10(){
   if(!Array.isArray(db.sf10)) db.sf10=[];
-  if(!db.sf10.length){
+  if(!db.sf10.length && Array.isArray(SF10_IMPORT) && SF10_IMPORT.length){
     db.sf10=SF10_IMPORT.map(normalizeSF10);
     save();
   }
