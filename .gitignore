@@ -1,0 +1,8 @@
+# Local/editor files
+.DS_Store
+Thumbs.db
+*.log
+
+# Never commit OAuth client secrets/private keys
+client_secret*.json
+credentials*.json
